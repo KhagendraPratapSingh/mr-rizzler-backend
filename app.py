@@ -57,6 +57,7 @@ def analyze():
     if not mime_type or mime_type == "application/octet-stream":
         mime_type = "image/jpeg"
 
+
     try:
         image_part = {
             "mime_type": mime_type,
@@ -78,19 +79,18 @@ def analyze():
         return jsonify(parsed)
 
     except Exception as e:
-    error_message = str(e)
+        error_message = str(e)
 
-    print(f"ACTUAL ERROR: {error_message}", flush=True)
+        print(f"ACTUAL ERROR: {error_message}", flush=True)
 
-    if "quota" in error_message.lower():
+        if "quota" in error_message.lower():
+            return jsonify({
+                "error": "Daily AI limit reached. Please try again tomorrow."
+            }), 429
+
         return jsonify({
-            "error": "Daily AI limit reached. Please try again tomorrow."
-        }), 429
-
-    return jsonify({
-        "error": "AI service temporarily unavailable."
-    }), 502
-
+            "error": "AI service temporarily unavailable."
+        }), 502
 
 @app.route("/health", methods=["GET"])
 def health():
