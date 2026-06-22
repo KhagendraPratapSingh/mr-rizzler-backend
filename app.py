@@ -78,8 +78,18 @@ def analyze():
         return jsonify(parsed)
 
     except Exception as e:
-        print(f"ACTUAL ERROR: {str(e)}", flush=True)
-        return jsonify({"error": f"AI service error: {str(e)}"}), 502
+    error_message = str(e)
+
+    print(f"ACTUAL ERROR: {error_message}", flush=True)
+
+    if "quota" in error_message.lower():
+        return jsonify({
+            "error": "Daily AI limit reached. Please try again tomorrow."
+        }), 429
+
+    return jsonify({
+        "error": "AI service temporarily unavailable."
+    }), 502
 
 
 @app.route("/health", methods=["GET"])
